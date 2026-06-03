@@ -82,3 +82,72 @@ button:hover, .whatsapp:hover {
   border: 1px solid #ccc;
   border-radius: 5px;
 }
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.gallery-item {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  text-align: center;
+  padding: 1rem;
+}
+
+.gallery-item img {
+  width: 100%;
+  border-radius: 5px;
+}
+
+#contact form {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  max-width: 400px;
+}
+#contact input, #contact textarea {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.success-message {
+  display: none;
+  color: #4CAF50;
+  font-weight: bold;
+  margin-top: 1rem;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+  background: #e8f5e9;
+  padding: 0.8rem;
+  border-radius: 5px;
+  text-align: center;
+}
+.success-message.show {
+  display: block;
+  opacity: 1;
+}
+
+.error-message {
+  display: none;
+  color: #d32f2f;
+  font-weight: bold;
+  margin-top: 1rem;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+  background: #ffebee;
+  padding: 0.8rem;
+  border-radius: 5px;
+  text-align: center;
+}
+.error-message.show {
+  display: block;
+  opacity: 1;
+}

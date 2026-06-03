@@ -1,88 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Church Youth Events Hub</title>
   <link rel="stylesheet" href="style.css">
+
   <!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+    const firebaseConfig = {
+      apiKey: "AIzaSyCFnip8WSn9BlnjIOcRljzMyXQg-bt1aDg",
+      authDomain: "church-youth-events-hub.firebaseapp.com",
+      projectId: "church-youth-events-hub",
+      storageBucket: "church-youth-events-hub.appspot.com",
+      messagingSenderId: "445899363336",
+      appId: "1:445899363336:web:88f2119853bf085b016dbd"
+    };
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCFnip8WSn9BlnjIOcRljzMyXQg-bt1aDg",
-    authDomain: "church-youth-events-hub.firebaseapp.com",
-    projectId: "church-youth-events-hub",
-    storageBucket: "church-youth-events-hub.firebasestorage.app",
-    messagingSenderId: "445899363336",
-    appId: "1:445899363336:web:88f2119853bf085b016dbd"
-  };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // Export db for use in script.js
-  window.db = db;
-  window.addDoc = addDoc;
-  window.collection = collection;
-  window.getDocs = getDocs;
-</script>
-
-  <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      margin: 0;
-      background: #f8f9fa;
-      color: #333;
-    }
-    header {
-      background: linear-gradient(90deg, #4CAF50, #FFC107);
-      color: white;
-      text-align: center;
-      padding: 1.5rem;
-    }
-    nav {
-      background: #333;
-      text-align: center;
-      padding: 0.5rem;
-    }
-    nav a {
-      color: white;
-      margin: 0 1rem;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    section {
-      padding: 2rem;
-    }
-    .event-card {
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      margin: 1rem 0;
-      padding: 1rem;
-    }
-    .event-card h3 {
-      color: #4CAF50;
-    }
-    footer {
-      background: #333;
-      color: white;
-      text-align: center;
-      padding: 1rem;
-      margin-top: 2rem;
-    }
-    .whatsapp {
-      background: #25D366;
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 5px;
-      text-decoration: none;
-    }
-  </style>
+    // Make db available globally
+    window.db = db;
+  </script>
 </head>
+
 <body>
   <header>
     <h1>Church Youth Events Hub</h1>
@@ -90,11 +36,13 @@
   </header>
 
   <nav>
-    <a href="#events">Events</a>
-    <a href="#register">Register</a>
-    <a href="#contact">Contact</a>
+    <a href="index.html">Home</a>
+    <a href="events.html">Events</a>
+    <a href="churches.html">Churches</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="contact.html">Contact</a>
   </nav>
-  
+
   <section id="events">
     <h2>Upcoming Events</h2>
     <div class="event-card">
@@ -113,12 +61,15 @@
 
   <section id="register">
     <h2>Register for an Event</h2>
-    <form action="https://formspree.io/f/yourFormID" method="POST">
-      <input type="text" name="name" placeholder="Your Name" required><br><br>
-      <input type="email" name="email" placeholder="Your Email" required><br><br>
-      <input type="text" name="church" placeholder="Your Church Name" required><br><br>
-      <button type="submit">Register</button>
-    </form>
+    <form id="registerForm" action="https://formspree.io/f/maqzyyle" method="POST">
+  <input type="text" name="name" placeholder="Your Name" required><br><br>
+  <input type="email" name="email" placeholder="Your Email" required><br><br>
+  <input type="text" name="church" placeholder="Your Church Name" required><br><br>
+  <button type="submit">Register</button>
+</form>
+
+<p id="formMessage" class="success-message">✅ Thank you for registering!</p>
+<p id="formError" class="error-message">❌ Something went wrong. Please try again.</p>
   </section>
 
   <section id="contact">
@@ -130,6 +81,8 @@
   <footer>
     <p>&copy; 2026 Church Youth Events Hub | Powered by Shadrack</p>
   </footer>
+  
+  <script src="script.js" type="module"></script>
+  
 </body>
-<script src="script.js"></script>
 </html>

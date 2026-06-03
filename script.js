@@ -1,79 +1,62 @@
-// Simple event filtering
-function filterEvents() {
-  const input = document.getElementById('filterInput').value.toLowerCase();
-  const cards = document.getElementsByClassName('event-card');
+// Firebase imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } 
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  for (let card of cards) {
-    const text = card.innerText.toLowerCase();
-    card.style.display = text.includes(input) ? 'block' : 'none';
-  }
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyCFnip8WSn9BlnjIOcRljzMyXQg-bt1aDg",
+  authDomain: "church-youth-events-hub.firebaseapp.com",
+  projectId: "church-youth-events-hub",
+  storageBucket: "church-youth-events-hub.appspot.com",
+  messagingSenderId: "445899363336",
+  appId: "1:445899363336:web:88f2119853bf085b016dbd"
+};
+
+// Initialize Firebase + Firestore
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// --------------------
+// Utility Functions
+// --------------------
+
+// Fade-in/out message utility
+function showMessage(element) {
+  element.classList.add("show");
+  setTimeout(() => element.classList.remove("show"), 5000);
 }
 
-// Example dynamic message
+// Greeting based on time
 function greetUser() {
   const hour = new Date().getHours();
   let greeting = "Welcome!";
   if (hour < 12) greeting = "Good morning!";
   else if (hour < 18) greeting = "Good afternoon!";
   else greeting = "Good evening!";
-  document.getElementById('greeting').innerText = greeting;
+  const greetingEl = document.getElementById("greeting");
+  if (greetingEl) greetingEl.innerText = greeting;
 }
 
-window.onload = greetUser;
-
-// Handle event submissions
-document.getElementById('eventForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-
-  const church = document.getElementById('churchName').value;
-  const title = document.getElementById('eventTitle').value;
-  const date = document.getElementById('eventDate').value;
-  const desc = document.getElementById('eventDescription').value;
-
-  const newEvent = document.createElement('div');
-  newEvent.classList.add('event-card');
-  newEvent.innerHTML = `
-    <h3>${title} – ${church}</h3>
-    <p>Date: ${date}</p>
-    <p>${desc}</p>
-  `;
-
-  document.getElementById('events').appendChild(newEvent);
-
-  // Reset form
-  document.getElementById('eventForm').reset();
-
-  alert('Event added successfully!');
-});
-
-// Save event to Firebase
-document.getElementById('eventForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const church = document.getElementById('churchName').value;
-  const title = document.getElementById('eventTitle').value;
-  const date = document.getElementById('eventDate').value;
-  const desc = document.getElementById('eventDescription').value;
-
-  try {
-    await addDoc(collection(db, "events"), {
-      church,
-      title,
-      date,
-      desc
-    });
-    alert("Event saved successfully!");
-    document.getElementById('eventForm').reset();
-    loadEvents();
-  } catch (error) {
-    console.error("Error adding event:", error);
+// Event filtering
+function filterEvents() {
+  const input = document.getElementById('filterInput')?.value.toLowerCase() || "";
+  const cards = document.getElementsByClassName('event-card');
+  for (let card of cards) {
+    const text = card.innerText.toLowerCase();
+    card.style.display = text.includes(input) ? 'block' : 'none';
   }
-});
+}
 
-// Load events from Firebase
+// --------------------
+// Event Management
+// --------------------
+
+// Load events from Firestore
 async function loadEvents() {
   const querySnapshot = await getDocs(collection(db, "events"));
   const eventsSection = document.getElementById('events');
+  if (!eventsSection) return;
   eventsSection.innerHTML = "<h2>Upcoming Events</h2>";
 
   querySnapshot.forEach((doc) => {
@@ -89,4 +72,57 @@ async function loadEvents() {
   });
 }
 
-window.onload = loadEvents;
+// --------------------
+// Registration Form
+// --------------------
+const registerForm = document.getElementById("registerForm");
+const formMessage = document.getElementById("formMessage");
+const formError = document.getElementById("formError");
+
+if (registerForm) {
+  registerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const data = new FormData(registerForm);
+
+    // Extract values for Firestore
+    const name = data.get("name");
+    const email = data.get("email");
+    const church = data.get("church");
+
+    try {
+      // 1. Send to Formspree
+      const response = await fetch(registerForm.action, {
+        method: registerForm.method,
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      // 2. Save to Firestore
+      await addDoc(collection(db, "registrations"), {
+        name,
+        email,
+        church,
+        timestamp: new Date().toISOString()
+      });
+
+      if (response.ok) {
+        showMessage(formMessage);
+        formError.classList.remove("show");
+        registerForm.reset();
+      } else {
+        showMessage(formError);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      showMessage(formError);
+    }
+  });
+}
+
+// --------------------
+// On Page Load
+// --------------------
+window.addEventListener("load", () => {
+  greetUser();
+  loadEvents();
+});

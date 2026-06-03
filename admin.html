@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Church Youth Events Hub – Admin</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase SDK -->
+ <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, collection, getDocs } 
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut } 
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = { /* your config */ };
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // Load registrations
+  async function loadRegistrations() {
+    const tableBody = document.getElementById("registrationsBody");
+    tableBody.innerHTML = "";
+
+    const querySnapshot = await getDocs(collection(db, "registrations"));
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${data.name}</td>
+        <td>${data.email}</td>
+        <td>${data.church}</td>
+        <td>${new Date(data.timestamp).toLocaleString()}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+  }
+
+  // Check admin role
+  async function getAdminRole(email) {
+    const docRef = doc(db, "admins", email);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return docSnap.data().role;
+    }
+    return null;
+  }
+
+  // Email login
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("adminEmail").value;
+    const password = document.getElementById("adminPassword").value;
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      alert("Login failed: " + error.message);
+    }
+  });
+
+  // Google login
+  document.getElementById("googleLoginBtn").addEventListener("click", async () => {
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      alert("Google login failed: " + error.message);
+    }
+  });
+
+  // Logout
+  document.getElementById("logoutBtn").addEventListener("click", async () => {
+    await signOut(auth);
+  });
+
+  // Auth state listener
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      const role = await getAdminRole(user.email);
+      if (role) {
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("adminSection").style.display = "block";
+        loadRegistrations();
+
+        // Role-based UI
+        if (role === "viewer") {
+          document.getElementById("logoutBtn").style.display = "block";
+          // viewer: can only see registrations
+        } else if (role === "editor") {
+          // editor: can see + edit events
+          document.getElementById("eventControls").style.display = "block";
+        } else if (role === "super-admin") {
+          // super-admin: full access
+          document.getElementById("eventControls").style.display = "block";
+          document.getElementById("adminControls").style.display = "block";
+        }
+      } else {
+        alert("Access denied. This account is not authorized.");
+        signOut(auth);
+      }
+    } else {
+      document.getElementById("loginSection").style.display = "block";
+      document.getElementById("adminSection").style.display = "none";
+    }
+  });
+</script>
+
+
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.8rem;
+      text-align: left;
+    }
+    th {
+      background: #4CAF50;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+    #loginSection {
+      margin: 2rem;
+      text-align: center;
+    }
+    #googleLoginBtn {
+      background: #4285F4;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Admin Dashboard</h1>
+    <p>Secure Access to Event Registrations</p>
+  </header>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="events.html">Events</a>
+    <a href="churches.html">Churches</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="contact.html">Contact</a>
+    <a href="admin.html">Admin</a>
+  </nav>
+
+  <section id="loginSection">
+  <h2>Admin Login</h2>
+
+  <!-- Email/Password Login -->
+  <form id="loginForm">
+    <input type="email" id="adminEmail" placeholder="Admin Email" required><br>
+    <input type="password" id="adminPassword" placeholder="Password" required><br>
+    <button type="submit">Login with Email</button>
+  </form>
+
+  <p>OR</p>
+
+  <!-- Google Login -->
+  <button id="googleLoginBtn">Sign in with Google</button>
+</section>
+
+
+  <!-- Admin Section -->
+  <section id="adminSection" style="display:none;">
+    <h2>Registrations</h2>
+    <button id="logoutBtn">Logout</button>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Church</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody id="registrationsBody">
+        <!-- Rows will be loaded dynamically -->
+      </tbody>
+    </table>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 Church Youth Events Hub | Powered by Shadrack</p>
+  </footer>
+</body>
+</html>
