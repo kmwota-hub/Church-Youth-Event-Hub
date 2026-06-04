@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,18 +13,22 @@
       gap: 1rem;
       margin-top: 2rem;
     }
+
     .gallery-item {
       text-align: center;
     }
+
     .gallery-item img {
       width: 100%;
       border-radius: 6px;
       cursor: pointer;
       transition: transform 0.3s ease;
     }
+
     .gallery-item img:hover {
       transform: scale(1.05);
     }
+
     .gallery-item p {
       margin-top: 0.5rem;
       font-size: 0.95rem;
@@ -34,32 +39,39 @@
       display: none;
       position: fixed;
       z-index: 999;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
       justify-content: center;
       align-items: center;
       flex-direction: column;
       text-align: center;
     }
+
     .lightbox img {
       max-width: 90%;
       max-height: 70%;
       border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
+
     .lightbox span {
       position: absolute;
-      top: 20px; right: 30px;
+      top: 20px;
+      right: 30px;
       font-size: 2rem;
       color: #fff;
       cursor: pointer;
     }
+
     .lightbox p {
       margin-top: 1rem;
       color: #fff;
       font-size: 1.1rem;
     }
+
     .nav-arrow {
       position: absolute;
       top: 50%;
@@ -69,10 +81,17 @@
       user-select: none;
       transform: translateY(-50%);
     }
-    #prevBtn { left: 30px; }
-    #nextBtn { right: 30px; }
+
+    #prevBtn {
+      left: 30px;
+    }
+
+    #nextBtn {
+      right: 30px;
+    }
   </style>
 </head>
+
 <body>
   <header>
     <h1>Church Youth Events Hub</h1>
@@ -80,34 +99,32 @@
   </header>
 
   <nav>
-    <a href="index.html">Home</a>
-    <a href="events.html">Events</a>
-    <a href="churches.html">Churches</a>
-    <a href="gallery.html">Gallery</a>
-    <a href="contact.html">Contact</a>
+    <button id="menuToggle" aria-label="Toggle navigation">☰</button>
+    <div id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="events.html">Events</a>
+      <a href="churches.html">Churches</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="contact.html">Contact</a>
+    </div>
   </nav>
+  <div id="backdrop"></div>
 
   <section id="gallery">
     <h2>Event Highlights</h2>
     <div class="gallery-grid">
       <div class="gallery-item">
-        <img 
-          src="images/grace_chapel.webp" 
+        <img src="images/grace_chapel.webp"
           srcset="images/worship-night-small.webp 480w, images/worship-night-medium.webp 800w, images/worship-night.webp 1200w"
-          sizes="(max-width: 600px) 480px, (max-width: 900px) 800px, 1200px"
-          alt="Worship Night" 
-          data-caption="Grace Chapel Worship Night 2025" 
-          loading="lazy">
+          sizes="(max-width: 600px) 480px, (max-width: 900px) 800px, 1200px" alt="Worship Night"
+          data-caption="Grace Chapel Worship Night 2025" loading="lazy">
         <p>Grace Chapel Worship Night 2025</p>
       </div>
       <div class="gallery-item">
-        <img 
-          src="images/youth-retreat.webp" 
+        <img src="images/youth-retreat.webp"
           srcset="images/youth-retreat-small.webp 480w, images/youth-retreat-medium.webp 800w, images/youth-retreat.webp 1200w"
-          sizes="(max-width: 600px) 480px, (max-width: 900px) 800px, 1200px"
-          alt="Youth Retreat" 
-          data-caption="Faith Assembly Youth Retreat 2025" 
-          loading="lazy">
+          sizes="(max-width: 600px) 480px, (max-width: 900px) 800px, 1200px" alt="Youth Retreat"
+          data-caption="Faith Assembly Youth Retreat 2025" loading="lazy">
         <p>Faith Assembly Youth Retreat 2025</p>
       </div>
       <!-- Repeat for other images -->
@@ -167,5 +184,24 @@
       }
     });
   </script>
+  <script>
+  const menuToggle = document.getElementById("menuToggle");
+  const navLinks = document.getElementById("navLinks");
+  const backdrop = document.getElementById("backdrop");
+
+  menuToggle.addEventListener("click", () => {
+    const isOpen = navLinks.classList.toggle("show");
+    backdrop.classList.toggle("show", isOpen);
+    menuToggle.textContent = isOpen ? "✖" : "☰";
+  });
+
+  backdrop.addEventListener("click", () => {
+    navLinks.classList.remove("show");
+    backdrop.classList.remove("show");
+    menuToggle.textContent = "☰";
+  });
+</script>
+
 </body>
+
 </html>

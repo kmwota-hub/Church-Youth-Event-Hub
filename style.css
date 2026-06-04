@@ -1,18 +1,4 @@
-/* General layout */
-body {
-  font-family: 'Segoe UI', Arial, sans-serif;
-  margin: 0;
-  background: #f8f9fa;
-  color: #333;
-}
-
-/* Header */
-header {
-  background: linear-gradient(90deg, #4CAF50, #FFC107);
-  color: white;
-  text-align: center;
-  padding: 1.5rem;
-}/* =========================
+/* =========================
    Base Layout & Typography
    ========================= */
 body {
@@ -21,15 +7,11 @@ body {
   background: #f8f9fa;
   color: #333;
   line-height: 1.6;
+  transition: background 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
 }
 
-h1, h2, h3 {
-  margin: 0.5rem 0;
-}
-
-p {
-  margin: 0.5rem 0;
-}
+h1, h2, h3 { margin: 0.5rem 0; }
+p { margin: 0.5rem 0; }
 
 /* =========================
    Header & Hero
@@ -40,22 +22,17 @@ header {
   text-align: center;
   padding: 1.5rem;
 }
-
 .hero {
   background: linear-gradient(120deg, #4CAF50, #FFC107);
   color: white;
   text-align: center;
   padding: 3rem 1rem;
 }
-.hero h1 {
-  font-size: 2.5rem;
-}
-.hero p {
-  font-size: 1.2rem;
-}
+.hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+.hero p { font-size: 1.2rem; }
 
 /* =========================
-   Navigation
+   Navigation (Overlay Mobile)
    ========================= */
 nav {
   background: #333;
@@ -67,22 +44,65 @@ nav a {
   margin: 0 1rem;
   text-decoration: none;
   font-weight: bold;
-  transition: color 0.3s ease;
+  transition: background 0.3s ease, color 0.3s ease;
 }
-nav a:hover {
-  color: #FFC107;
+nav a:hover { color: #FFC107; }
+
+/* Hamburger button */
+#menuToggle {
+  display: none;
+  background: #333;
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  z-index: 1002;
+  position: relative;
 }
 
-/* Responsive nav */
+/* Overlay nav for mobile */
 @media (max-width: 768px) {
-  nav {
-    display: flex;
+  #menuToggle { display: block; }
+  #navLinks {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    height: 100%;
+    width: 70%;
+    background: #333;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    padding: 2rem 1rem;
+    transition: right 0.4s ease;
+    z-index: 1001;
   }
-  nav a {
-    margin: 0.5rem 0;
+  #navLinks.show { right: 0; }
+  #navLinks a {
+    color: white;
+    margin: 1rem 0;
+    font-size: 1.2rem;
+    text-decoration: none;
+    width: 100%;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
   }
+  #navLinks.show a {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  /* Backdrop */
+  #backdrop {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6);
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.4s ease;
+    z-index: 1000;
+  }
+  #backdrop.show { opacity: 1; visibility: visible; }
 }
 
 /* =========================
@@ -95,12 +115,8 @@ nav a:hover {
   padding: 1rem;
   transition: transform 0.2s ease;
 }
-.card:hover, .event-card:hover, .gallery-item:hover {
-  transform: scale(1.02);
-}
-.event-card h3 {
-  color: #4CAF50;
-}
+.card:hover, .event-card:hover, .gallery-item:hover { transform: scale(1.02); }
+.event-card h3 { color: #4CAF50; }
 
 /* Gallery grid */
 .gallery-grid {
@@ -109,7 +125,7 @@ nav a:hover {
   gap: 1rem;
   margin-top: 1rem;
 }
-.gallery-item img {
+.gallery-item img, .event-card img {
   width: 100%;
   height: 200px;
   object-fit: cover;
@@ -119,7 +135,7 @@ nav a:hover {
 /* =========================
    Forms (Upload & Contact)
    ========================= */
-form {
+form, #contact form {
   background: white;
   padding: 1.5rem;
   border-radius: 8px;
@@ -127,7 +143,7 @@ form {
   max-width: 400px;
   margin: auto;
 }
-input, textarea {
+input, textarea, #contact input, #contact textarea {
   width: 100%;
   padding: 0.5rem;
   margin-bottom: 1rem;
@@ -147,9 +163,7 @@ button, .whatsapp {
   cursor: pointer;
   transition: background 0.3s ease;
 }
-button:hover, .whatsapp:hover {
-  background: #128C7E;
-}
+button:hover, .whatsapp:hover { background: #128C7E; }
 
 /* =========================
    Messages (Success & Error)
@@ -188,193 +202,6 @@ footer {
   margin-top: 2rem;
 }
 
-
-/* Navigation */
-nav {
-  background: #333;
-  text-align: center;
-  padding: 0.5rem;
-}
-nav a {
-  color: white;
-  margin: 0 1rem;
-  text-decoration: none;
-  font-weight: bold;
-}
-nav a:hover {
-  color: #FFC107;
-}
-
-/* Event cards */
-.event-card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  margin: 1rem 0;
-  padding: 1rem;
-  transition: transform 0.2s ease;
-}
-.event-card:hover {
-  transform: scale(1.02);
-}
-.event-card h3 {
-  color: #4CAF50;
-}
-
-/* Footer */
-footer {
-  background: #333;
-  color: white;
-  text-align: center;
-  padding: 1rem;
-  margin-top: 2rem;
-}
-
-/* Buttons */
-button, .whatsapp {
-  background: #25D366;
-  color: white;
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-button:hover, .whatsapp:hover {
-  background: #128C7E;
-}
-
-#upload form {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  max-width: 400px;
-}
-#upload input, #upload textarea {
-  width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.gallery-item {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  text-align: center;
-  padding: 1rem;
-}
-
-.gallery-item img {
-  width: 100%;
-  border-radius: 5px;
-}
-
-#contact form {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  max-width: 400px;
-}
-#contact input, #contact textarea {
-  width: 100%;
-  padding: 0.5rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.success-message {
-  display: none;
-  color: #4CAF50;
-  font-weight: bold;
-  margin-top: 1rem;
-  opacity: 0;
-  transition: opacity 0.8s ease-in-out;
-  background: #e8f5e9;
-  padding: 0.8rem;
-  border-radius: 5px;
-  text-align: center;
-}
-.success-message.show {
-  display: block;
-  opacity: 1;
-}
-
-.error-message {
-  display: none;
-  color: #d32f2f;
-  font-weight: bold;
-  margin-top: 1rem;
-  opacity: 0;
-  transition: opacity 0.8s ease-in-out;
-  background: #ffebee;
-  padding: 0.8rem;
-  border-radius: 5px;
-  text-align: center;
-}
-.error-message.show {
-  display: block;
-  opacity: 1;
-}
-
-/* Mobile nav */
-@media (max-width: 768px) {
-  nav {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  nav a {
-    display: block;
-    margin: 0.5rem 0;
-  }
-}
-
-.card {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  padding: 1rem;
-  transition: transform 0.2s ease;
-}
-.card:hover {
-  transform: scale(1.02);
-}
-
-.hero {
-  background: linear-gradient(120deg, #4CAF50, #FFC107);
-  color: white;
-  text-align: center;
-  padding: 3rem 1rem;
-}
-.hero h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-}
-.hero p {
-  font-size: 1.2rem;
-}
-
-button, .whatsapp, nav a {
-  transition: background 0.3s ease, color 0.3s ease;
-}
-
-.gallery-item img, .event-card img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-}
-
 /* =========================
    Dark Mode
    ========================= */
@@ -382,22 +209,13 @@ body.dark-mode {
   background: #121212;
   color: #e0e0e0;
 }
-
 body.dark-mode header {
   background: linear-gradient(90deg, #222, #444);
   color: #fff;
 }
-
-body.dark-mode nav {
-  background: #222;
-}
-body.dark-mode nav a {
-  color: #e0e0e0;
-}
-body.dark-mode nav a:hover {
-  color: #FFC107;
-}
-
+body.dark-mode nav { background: #222; }
+body.dark-mode nav a { color: #e0e0e0; }
+body.dark-mode nav a:hover { color: #FFC107; }
 body.dark-mode .card,
 body.dark-mode .event-card,
 body.dark-mode .gallery-item,
@@ -406,12 +224,10 @@ body.dark-mode form {
   color: #e0e0e0;
   box-shadow: 0 2px 6px rgba(255,255,255,0.1);
 }
-
 body.dark-mode footer {
   background: #222;
   color: #e0e0e0;
 }
-
 body.dark-mode .success-message {
   background: #2e7d32;
   color: #fff;
@@ -424,8 +240,7 @@ body.dark-mode .error-message {
 /* Dark Mode Toggle Button */
 #darkModeToggle {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 20px; right: 20px;
   background: #333;
   color: #fff;
   border: none;
@@ -442,124 +257,16 @@ body.dark-mode .error-message {
   transform: scale(1.05);
 }
 
-/* Smooth theme transition */
-body, header, nav, .card, .event-card, .gallery-item, form, footer {
-  transition: background 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
+/* =========================
+   Admin Controls
+   ========================= */
+#eventControls, #adminControls {
+  margin: 2rem auto;
+  max-width: 600px;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
-
-/* Hamburger button */
-#menuToggle {
-  display: none;
-  background: #333;
-  color: white;
-  border: none;
-  font-size: 1.5rem;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-}
-/* Default nav (desktop) */
-#menuToggle {
-  display: none; /* hide hamburger on desktop */
-}
-#navLinks {
-  display: flex;
-  justify-content: center;
-}
-
-/* Mobile nav */
-@media (max-width: 768px) {
-  #menuToggle {
-    display: block; /* show hamburger */
-    background: #333;
-    color: white;
-    border: none;
-    font-size: 1.5rem;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-  }
-
-  #navLinks {
-    display: none; /* hide links by default */
-    flex-direction: column;
-    background: #333;
-    padding: 1rem;
-    width: 100%;
-  }
-
-  #navLinks.show {
-    display: flex; /* show links when toggled */
-  }
-
-  #navLinks a {
-    margin: 0.5rem 0;
-    display: block;
-    color: white;
-  }
-}
-/* Mobile nav with slide + fade */
-@media (max-width: 768px) {
-  #navLinks {
-    display: none;
-    flex-direction: column;
-    background: #333;
-    padding: 1rem;
-    width: 100%;
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: max-height 0.4s ease-out, opacity 0.4s ease-out;
-  }
-
-  #navLinks.show {
-    display: flex;
-    max-height: 500px; /* enough to show all links */
-    opacity: 1;
-  }
-
-  #navLinks a {
-    margin: 0.5rem 0;
-    display: block;
-    color: white;
-    transition: opacity 0.3s ease;
-  }
-}
-/* Overlay nav for mobile */
-@media (max-width: 768px) {
-  #navLinks {
-    position: fixed;
-    top: 0;
-    right: -100%; /* hidden off-screen */
-    height: 100%;
-    width: 70%; /* covers part of screen */
-    background: #333;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 2rem 1rem;
-    transition: right 0.4s ease;
-    z-index: 999;
-  }
-
-  #navLinks.show {
-    right: 0; /* slide in */
-  }
-
-  #navLinks a {
-    color: white;
-    margin: 1rem 0;
-    font-size: 1.2rem;
-    text-decoration: none;
-    width: 100%;
-  }
-
-  #menuToggle {
-    display: block;
-    background: #333;
-    color: white;
-    border: none;
-    font-size: 1.5rem;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    z-index: 1000;
-    position: relative;
-  }
-}
+#eventControls h2, #adminControls h2 { color: #4CAF50; }
+#eventControls button, #adminControls button { margin: 0.5rem; }

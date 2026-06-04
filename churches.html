@@ -14,15 +14,19 @@
     <p>Meet the Churches Behind the Movement</p>
   </header>
 
-  <nav>
+<nav>
+  <button id="menuToggle" aria-label="Toggle navigation">☰</button>
+  <div id="navLinks">
     <a href="index.html">Home</a>
     <a href="events.html">Events</a>
     <a href="churches.html">Churches</a>
     <a href="gallery.html">Gallery</a>
     <a href="contact.html">Contact</a>
     <a href="admin.html">Admin</a>
+  </div>
+</nav>
+<div id="backdrop"></div>
 
-  </nav>
 
   <section id="churches">
     <h2>Participating Churches</h2>
@@ -52,6 +56,24 @@
   <footer>
     <p>&copy; 2026 Church Youth Events Hub | Powered by Mwotsam</p>
   </footer>
+  <script>
+  const menuToggle = document.getElementById("menuToggle");
+  const navLinks = document.getElementById("navLinks");
+  const backdrop = document.getElementById("backdrop");
+
+  menuToggle.addEventListener("click", () => {
+    const isOpen = navLinks.classList.toggle("show");
+    backdrop.classList.toggle("show", isOpen);
+    menuToggle.textContent = isOpen ? "✖" : "☰";
+  });
+
+  backdrop.addEventListener("click", () => {
+    navLinks.classList.remove("show");
+    backdrop.classList.remove("show");
+    menuToggle.textContent = "☰";
+  });
+</script>
+
 </body>
 
 </html>

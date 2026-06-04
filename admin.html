@@ -107,7 +107,6 @@
   });
 </script>
 
-
   <style>
     table {
       width: 100%;
@@ -139,6 +138,68 @@
       cursor: pointer;
       font-weight: bold;
     }
+    /* Mobile overlay nav */
+@media (max-width: 768px) {
+  #navLinks {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    height: 100%;
+    width: 70%;
+    background: #333;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 2rem 1rem;
+    transition: right 0.4s ease;
+    z-index: 1001;
+  }
+  #navLinks.show {
+    right: 0;
+  }
+  #navLinks a {
+    color: white;
+    margin: 1rem 0;
+    font-size: 1.2rem;
+    text-decoration: none;
+    width: 100%;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  #navLinks.show a {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  #menuToggle {
+    display: block;
+    background: #333;
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    z-index: 1002;
+    position: relative;
+  }
+  /* Backdrop */
+  #backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease;
+    z-index: 1000;
+  }
+  #backdrop.show {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -147,13 +208,19 @@
     <p>Secure Access to Event Registrations</p>
   </header>
 
-  <nav>
+<nav>
+  <button id="menuToggle" aria-label="Toggle navigation">☰</button>
+  <div id="navLinks">
     <a href="index.html">Home</a>
     <a href="events.html">Events</a>
     <a href="churches.html">Churches</a>
     <a href="gallery.html">Gallery</a>
     <a href="contact.html">Contact</a>
-  </nav>
+    <a href="admin.html">Admin</a>
+  </div>
+</nav>
+<div id="backdrop"></div>
+
 
   <section id="loginSection">
   <h2>Admin Login</h2>
@@ -190,9 +257,37 @@
       </tbody>
     </table>
   </section>
+<section id="eventControls" style="display:none;">
+  <h2>Event Management</h2>
+  <button>Add Event</button>
+  <button>Edit Event</button>
+</section>
+
+<section id="adminControls" style="display:none;">
+  <h2>Admin Management</h2>
+  <button>Manage Admins</button>
+</section>
 
   <footer>
     <p>&copy; 2026 Church Youth Events Hub | Powered by Mwotsam</p>
   </footer>
+  <script>
+  const menuToggle = document.getElementById("menuToggle");
+  const navLinks = document.getElementById("navLinks");
+  const backdrop = document.getElementById("backdrop");
+
+  menuToggle.addEventListener("click", () => {
+    const isOpen = navLinks.classList.toggle("show");
+    backdrop.classList.toggle("show", isOpen);
+    menuToggle.textContent = isOpen ? "✖" : "☰";
+  });
+
+  backdrop.addEventListener("click", () => {
+    navLinks.classList.remove("show");
+    backdrop.classList.remove("show");
+    menuToggle.textContent = "☰";
+  });
+</script>
+
 </body>
 </html>

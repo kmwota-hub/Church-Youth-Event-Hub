@@ -126,3 +126,50 @@ window.addEventListener("load", () => {
   greetUser();
   loadEvents();
 });
+
+const menuToggle = document.getElementById("menuToggle");
+const navLinks = document.getElementById("navLinks");
+const backdrop = document.getElementById("backdrop");
+
+menuToggle.addEventListener("click", () => {
+  const isOpen = navLinks.classList.toggle("show");
+  backdrop.classList.toggle("show", isOpen);
+  menuToggle.textContent = isOpen ? "✖" : "☰";
+});
+
+backdrop.addEventListener("click", () => {
+  navLinks.classList.remove("show");
+  backdrop.classList.remove("show");
+  menuToggle.textContent = "☰";
+});
+const menuToggle = document.getElementById("menuToggle");
+const navLinks = document.getElementById("navLinks");
+const backdrop = document.getElementById("backdrop");
+
+menuToggle.addEventListener("click", () => {
+  const isOpen = navLinks.classList.toggle("show");
+  backdrop.classList.toggle("show", isOpen);
+  menuToggle.textContent = isOpen ? "✖" : "☰";
+});
+
+backdrop.addEventListener("click", () => {
+  navLinks.classList.remove("show");
+  backdrop.classList.remove("show");
+  menuToggle.textContent = "☰";
+});
+const menuToggle = document.getElementById("menuToggle");
+const navLinks = document.getElementById("navLinks");
+const backdrop = document.getElementById("backdrop");
+
+menuToggle.addEventListener("click", () => {
+  const isOpen = navLinks.classList.toggle("show");
+  backdrop.classList.toggle("show", isOpen);
+  menuToggle.textContent = isOpen ? "✖" : "☰";
+});
+
+backdrop.addEventListener("click", () => {
+  navLinks.classList.remove("show");
+  backdrop.classList.remove("show");
+  menuToggle.textContent = "☰";
+});
+
