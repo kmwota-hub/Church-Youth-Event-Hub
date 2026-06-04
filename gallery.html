@@ -5,6 +5,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Church Youth Events Hub – Gallery</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .gallery-item {
+      text-align: center;
+    }
+    .gallery-item img {
+      width: 100%;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .gallery-item img:hover {
+      transform: scale(1.05);
+    }
+    .gallery-item p {
+      margin-top: 0.5rem;
+      font-size: 0.95rem;
+      color: #333;
+    }
+
+    .lightbox {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+    }
+    .lightbox img {
+      max-width: 90%;
+      max-height: 70%;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    .lightbox span {
+      position: absolute;
+      top: 20px; right: 30px;
+      font-size: 2rem;
+      color: #fff;
+      cursor: pointer;
+    }
+    .lightbox p {
+      margin-top: 1rem;
+      color: #fff;
+      font-size: 1.1rem;
+    }
+    .nav-arrow {
+      position: absolute;
+      top: 50%;
+      font-size: 3rem;
+      color: #fff;
+      cursor: pointer;
+      user-select: none;
+      transform: translateY(-50%);
+    }
+    #prevBtn { left: 30px; }
+    #nextBtn { right: 30px; }
+  </style>
 </head>
 <body>
   <header>
@@ -18,15 +85,88 @@
     <a href="churches.html">Churches</a>
     <a href="gallery.html">Gallery</a>
     <a href="contact.html">Contact</a>
+    <a href="admin.html">Admin</a>
   </nav>
 
   <section id="gallery">
     <h2>Event Highlights</h2>
     <div class="gallery-grid">
       <div class="gallery-item">
-        <img src="images/worship-night.jpg" alt="Worship Night">
+        <img 
+          src="images/grace_chapel.webp" 
+          srcset="images/worship-night-small.webp 480w, images/worship-night-medium.webp 800w, images/worship-night.webp 1200w"
+          sizes="(max-width: 600px) 480px, (max-width: 900px) 800px, 1200px"
+          alt="Worship Night" 
+          data-caption="Grace Chapel Worship Night 2025" 
+          loading="lazy">
         <p>Grace Chapel Worship Night 2025</p>
       </div>
       <div class="gallery-item">
-        <img src="images/youth-retreat.jpg" alt="Youth Retreat">
-        <p>Faith Assembly Youth Retreat
+        <img 
+          src="images/youth-retreat.webp" 
+          srcset="images/youth-retreat-small.webp 480w, images/youth-retreat-medium.webp 800w, images/youth-retreat.webp 1200w"
+          sizes="(max-width: 600px) 480px, (max-width: 900px) 800px, 1200px"
+          alt="Youth Retreat" 
+          data-caption="Faith Assembly Youth Retreat 2025" 
+          loading="lazy">
+        <p>Faith Assembly Youth Retreat 2025</p>
+      </div>
+      <!-- Repeat for other images -->
+    </div>
+  </section>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox">
+    <span id="closeBtn">&times;</span>
+    <span id="prevBtn" class="nav-arrow">&#10094;</span>
+    <img id="lightboxImg" src="" alt="">
+    <span id="nextBtn" class="nav-arrow">&#10095;</span>
+    <p id="lightboxCaption"></p>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Church Youth Events Hub | Powered by Mwotsam</p>
+  </footer>
+
+  <script>
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightboxImg");
+    const lightboxCaption = document.getElementById("lightboxCaption");
+    const closeBtn = document.getElementById("closeBtn");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    const images = document.querySelectorAll(".gallery-item img");
+    let currentIndex = 0;
+
+    function showImage(index) {
+      const img = images[index];
+      lightboxImg.src = img.src;
+      lightboxImg.alt = img.alt;
+      lightboxCaption.textContent = img.dataset.caption;
+      lightbox.style.display = "flex";
+      currentIndex = index;
+    }
+
+    images.forEach((img, index) => {
+      img.addEventListener("click", () => showImage(index));
+    });
+
+    closeBtn.addEventListener("click", () => lightbox.style.display = "none");
+    prevBtn.addEventListener("click", () => showImage((currentIndex - 1 + images.length) % images.length));
+    nextBtn.addEventListener("click", () => showImage((currentIndex + 1) % images.length));
+
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) lightbox.style.display = "none";
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (lightbox.style.display === "flex") {
+        if (e.key === "ArrowLeft") showImage((currentIndex - 1 + images.length) % images.length);
+        else if (e.key === "ArrowRight") showImage((currentIndex + 1) % images.length);
+        else if (e.key === "Escape") lightbox.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
