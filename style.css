@@ -446,3 +446,34 @@ body.dark-mode .error-message {
 body, header, nav, .card, .event-card, .gallery-item, form, footer {
   transition: background 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
 }
+
+/* Hamburger button */
+#menuToggle {
+  display: none;
+  background: #333;
+  color: white;
+  border: none;
+  font-size: 1.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+/* Mobile nav */
+@media (max-width: 768px) {
+  #menuToggle {
+    display: block;
+  }
+  #navLinks {
+    display: none;
+    flex-direction: column;
+    background: #333;
+    padding: 1rem;
+  }
+  #navLinks a {
+    margin: 0.5rem 0;
+    display: block;
+  }
+  #navLinks.show {
+    display: flex;
+  }
+}

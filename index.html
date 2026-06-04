@@ -36,6 +36,7 @@
   </header>
 
   <nav>
+    <button id="menuToggle" aria-label="Toggle navigation">☰</button>
     <a href="index.html">Home</a>
     <a href="events.html">Events</a>
     <a href="churches.html">Churches</a>
@@ -111,6 +112,15 @@
     toggleBtn.textContent = "☀️ Light Mode";
   }
 </script>
+<script>
+  const menuToggle = document.getElementById("menuToggle");
+  const navLinks = document.getElementById("navLinks");
+
+  menuToggle.addEventListener("click", () => {
+    navLinks.classList.toggle("show");
+  });
+</script>
+
 
 </body>
 
