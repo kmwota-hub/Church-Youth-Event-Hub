@@ -457,23 +457,109 @@ body, header, nav, .card, .event-card, .gallery-item, form, footer {
   padding: 0.5rem 1rem;
   cursor: pointer;
 }
+/* Default nav (desktop) */
+#menuToggle {
+  display: none; /* hide hamburger on desktop */
+}
+#navLinks {
+  display: flex;
+  justify-content: center;
+}
 
 /* Mobile nav */
 @media (max-width: 768px) {
   #menuToggle {
-    display: block;
+    display: block; /* show hamburger */
+    background: #333;
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
   }
+
+  #navLinks {
+    display: none; /* hide links by default */
+    flex-direction: column;
+    background: #333;
+    padding: 1rem;
+    width: 100%;
+  }
+
+  #navLinks.show {
+    display: flex; /* show links when toggled */
+  }
+
+  #navLinks a {
+    margin: 0.5rem 0;
+    display: block;
+    color: white;
+  }
+}
+/* Mobile nav with slide + fade */
+@media (max-width: 768px) {
   #navLinks {
     display: none;
     flex-direction: column;
     background: #333;
     padding: 1rem;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.4s ease-out, opacity 0.4s ease-out;
   }
+
+  #navLinks.show {
+    display: flex;
+    max-height: 500px; /* enough to show all links */
+    opacity: 1;
+  }
+
   #navLinks a {
     margin: 0.5rem 0;
     display: block;
+    color: white;
+    transition: opacity 0.3s ease;
   }
+}
+/* Overlay nav for mobile */
+@media (max-width: 768px) {
+  #navLinks {
+    position: fixed;
+    top: 0;
+    right: -100%; /* hidden off-screen */
+    height: 100%;
+    width: 70%; /* covers part of screen */
+    background: #333;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 2rem 1rem;
+    transition: right 0.4s ease;
+    z-index: 999;
+  }
+
   #navLinks.show {
-    display: flex;
+    right: 0; /* slide in */
+  }
+
+  #navLinks a {
+    color: white;
+    margin: 1rem 0;
+    font-size: 1.2rem;
+    text-decoration: none;
+    width: 100%;
+  }
+
+  #menuToggle {
+    display: block;
+    background: #333;
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    z-index: 1000;
+    position: relative;
   }
 }
