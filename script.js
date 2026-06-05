@@ -260,3 +260,31 @@ async function loadEvents() {
 
 // Run on page load
 document.addEventListener("DOMContentLoaded", loadEvents);
+async function loadRegistrations() {
+  const spinner = document.getElementById("loadingSpinner");
+  const tableBody = document.getElementById("registrationsBody");
+
+  // Show spinner
+  spinner.style.display = "block";
+  tableBody.innerHTML = "";
+
+  try {
+    const querySnapshot = await getDocs(collection(db, "registrations"));
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${data.name}</td>
+        <td>${data.email}</td>
+        <td>${data.church}</td>
+        <td>${new Date(data.timestamp).toLocaleString()}</td>
+      `;
+      tableBody.appendChild(row);
+    });
+  } catch (error) {
+    console.error("Error loading registrations:", error);
+  } finally {
+    // Hide spinner
+    spinner.style.display = "none";
+  }
+}

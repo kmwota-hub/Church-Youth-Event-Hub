@@ -213,33 +213,59 @@
         visibility: visible;
       }
     }
-    #submitEvent {
-  margin: 2rem auto;
-  max-width: 500px;
-  padding: 1.5rem;
-  background: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-#submitEvent input, #submitEvent textarea {
-  width: 100%;
-  padding: 0.8rem;
-  margin-bottom: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-#submitEvent button {
-  background: #4CAF50;
-  color: white;
-  padding: 0.8rem 1.2rem;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-#submitEvent button:hover {
-  background: #45a049;
-}
 
+    #submitEvent {
+      margin: 2rem auto;
+      max-width: 500px;
+      padding: 1.5rem;
+      background: #f9f9f9;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    #submitEvent input,
+    #submitEvent textarea {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    #submitEvent button {
+      background: #4CAF50;
+      color: white;
+      padding: 0.8rem 1.2rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #submitEvent button:hover {
+      background: #45a049;
+    }
+
+    .spinner {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #4CAF50;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 1rem auto;
+      display: none;
+      /* hidden by default */
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 </head>
 
@@ -284,6 +310,7 @@
   <section id="adminSection" style="display:none;">
     <h2>Registrations</h2>
     <button id="logoutBtn">Logout</button>
+    <div id="loadingSpinner" class="spinner"></div>
     <table>
       <thead>
         <tr>
@@ -340,40 +367,39 @@
       menuToggle.textContent = "☰";
     });
   </script>
-<script>import { getFirestore, collection, addDoc } 
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  <script>import { getFirestore, collection, addDoc }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const db = getFirestore(app);
+    const db = getFirestore(app);
 
-document.getElementById("eventForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+    document.getElementById("eventForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-  const title = document.getElementById("eventTitle").value;
-  const church = document.getElementById("eventChurch").value;
-  const date = document.getElementById("eventDate").value;
-  const location = document.getElementById("eventLocation").value;
-  const desc = document.getElementById("eventDesc").value;
+      const title = document.getElementById("eventTitle").value;
+      const church = document.getElementById("eventChurch").value;
+      const date = document.getElementById("eventDate").value;
+      const location = document.getElementById("eventLocation").value;
+      const desc = document.getElementById("eventDesc").value;
 
-  try {
-    await addDoc(collection(db, "events"), {
-      title,
-      church,
-      date,
-      location,
-      desc,
-      timestamp: Date.now()
+      try {
+        await addDoc(collection(db, "events"), {
+          title,
+          church,
+          date,
+          location,
+          desc,
+          timestamp: Date.now()
+        });
+        alert("Event submitted successfully!");
+        e.target.reset();
+
+        // Refresh upcoming events immediately
+        loadEvents();
+      } catch (error) {
+        console.error("Error adding event:", error);
+        alert("Failed to submit event. Please try again.");
+      }
     });
-    alert("Event submitted successfully!");
-    e.target.reset();
-
-    // Refresh upcoming events immediately
-    loadEvents();
-  } catch (error) {
-    console.error("Error adding event:", error);
-    alert("Failed to submit event. Please try again.");
-  }
-});
-</script>
+  </script>
 </body>
-
 </html>
