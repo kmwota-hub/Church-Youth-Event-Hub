@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,105 +8,105 @@
   <link rel="stylesheet" href="style.css">
 
   <!-- Firebase SDK -->
- <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, doc, getDoc, collection, getDocs } 
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut } 
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, collection, getDocs }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signOut }
+      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-  const firebaseConfig = { /* your config */ };
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
+    const firebaseConfig = { /* your config */ };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
 
-  // Load registrations
-  async function loadRegistrations() {
-    const tableBody = document.getElementById("registrationsBody");
-    tableBody.innerHTML = "";
+    // Load registrations
+    async function loadRegistrations() {
+      const tableBody = document.getElementById("registrationsBody");
+      tableBody.innerHTML = "";
 
-    const querySnapshot = await getDocs(collection(db, "registrations"));
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      const row = document.createElement("tr");
-      row.innerHTML = `
+      const querySnapshot = await getDocs(collection(db, "registrations"));
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const row = document.createElement("tr");
+        row.innerHTML = `
         <td>${data.name}</td>
         <td>${data.email}</td>
         <td>${data.church}</td>
         <td>${new Date(data.timestamp).toLocaleString()}</td>
       `;
-      tableBody.appendChild(row);
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Check admin role
+    async function getAdminRole(email) {
+      const docRef = doc(db, "admins", email);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        return docSnap.data().role;
+      }
+      return null;
+    }
+
+    // Email login
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("adminEmail").value;
+      const password = document.getElementById("adminPassword").value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (error) {
+        alert("Login failed: " + error.message);
+      }
     });
-  }
 
-  // Check admin role
-  async function getAdminRole(email) {
-    const docRef = doc(db, "admins", email);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      return docSnap.data().role;
-    }
-    return null;
-  }
+    // Google login
+    document.getElementById("googleLoginBtn").addEventListener("click", async () => {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        alert("Google login failed: " + error.message);
+      }
+    });
 
-  // Email login
-  document.getElementById("loginForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("adminEmail").value;
-    const password = document.getElementById("adminPassword").value;
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (error) {
-      alert("Login failed: " + error.message);
-    }
-  });
+    // Logout
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await signOut(auth);
+    });
 
-  // Google login
-  document.getElementById("googleLoginBtn").addEventListener("click", async () => {
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      alert("Google login failed: " + error.message);
-    }
-  });
+    // Auth state listener
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const role = await getAdminRole(user.email);
+        if (role) {
+          document.getElementById("loginSection").style.display = "none";
+          document.getElementById("adminSection").style.display = "block";
+          loadRegistrations();
 
-  // Logout
-  document.getElementById("logoutBtn").addEventListener("click", async () => {
-    await signOut(auth);
-  });
-
-  // Auth state listener
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      const role = await getAdminRole(user.email);
-      if (role) {
-        document.getElementById("loginSection").style.display = "none";
-        document.getElementById("adminSection").style.display = "block";
-        loadRegistrations();
-
-        // Role-based UI
-        if (role === "viewer") {
-          document.getElementById("logoutBtn").style.display = "block";
-          // viewer: can only see registrations
-        } else if (role === "editor") {
-          // editor: can see + edit events
-          document.getElementById("eventControls").style.display = "block";
-        } else if (role === "super-admin") {
-          // super-admin: full access
-          document.getElementById("eventControls").style.display = "block";
-          document.getElementById("adminControls").style.display = "block";
+          // Role-based UI
+          if (role === "viewer") {
+            document.getElementById("logoutBtn").style.display = "block";
+            // viewer: can only see registrations
+          } else if (role === "editor") {
+            // editor: can see + edit events
+            document.getElementById("eventControls").style.display = "block";
+          } else if (role === "super-admin") {
+            // super-admin: full access
+            document.getElementById("eventControls").style.display = "block";
+            document.getElementById("adminControls").style.display = "block";
+          }
+        } else {
+          alert("Access denied. This account is not authorized.");
+          signOut(auth);
         }
       } else {
-        alert("Access denied. This account is not authorized.");
-        signOut(auth);
+        document.getElementById("loginSection").style.display = "block";
+        document.getElementById("adminSection").style.display = "none";
       }
-    } else {
-      document.getElementById("loginSection").style.display = "block";
-      document.getElementById("adminSection").style.display = "none";
-    }
-  });
-</script>
+    });
+  </script>
 
   <style>
     table {
@@ -113,22 +114,28 @@
       border-collapse: collapse;
       margin-top: 1rem;
     }
-    th, td {
+
+    th,
+    td {
       border: 1px solid #ccc;
       padding: 0.8rem;
       text-align: left;
     }
+
     th {
       background: #4CAF50;
       color: white;
     }
+
     tr:nth-child(even) {
       background: #f9f9f9;
     }
+
     #loginSection {
       margin: 2rem;
       text-align: center;
     }
+
     #googleLoginBtn {
       background: #4285F4;
       color: white;
@@ -138,105 +145,139 @@
       cursor: pointer;
       font-weight: bold;
     }
+
     /* Mobile overlay nav */
-@media (max-width: 768px) {
-  #navLinks {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    height: 100%;
-    width: 70%;
-    background: #333;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 2rem 1rem;
-    transition: right 0.4s ease;
-    z-index: 1001;
-  }
-  #navLinks.show {
-    right: 0;
-  }
-  #navLinks a {
-    color: white;
-    margin: 1rem 0;
-    font-size: 1.2rem;
-    text-decoration: none;
-    width: 100%;
-    opacity: 0;
-    transform: translateX(20px);
-    transition: opacity 0.4s ease, transform 0.4s ease;
-  }
-  #navLinks.show a {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  #menuToggle {
-    display: block;
-    background: #333;
-    color: white;
-    border: none;
-    font-size: 1.5rem;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    z-index: 1002;
-    position: relative;
-  }
-  /* Backdrop */
-  #backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.6);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.4s ease;
-    z-index: 1000;
-  }
-  #backdrop.show {
-    opacity: 1;
-    visibility: visible;
-  }
+    @media (max-width: 768px) {
+      #navLinks {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        height: 100%;
+        width: 70%;
+        background: #333;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 2rem 1rem;
+        transition: right 0.4s ease;
+        z-index: 1001;
+      }
+
+      #navLinks.show {
+        right: 0;
+      }
+
+      #navLinks a {
+        color: white;
+        margin: 1rem 0;
+        font-size: 1.2rem;
+        text-decoration: none;
+        width: 100%;
+        opacity: 0;
+        transform: translateX(20px);
+        transition: opacity 0.4s ease, transform 0.4s ease;
+      }
+
+      #navLinks.show a {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      #menuToggle {
+        display: block;
+        background: #333;
+        color: white;
+        border: none;
+        font-size: 1.5rem;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        z-index: 1002;
+        position: relative;
+      }
+
+      /* Backdrop */
+      #backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.4s ease;
+        z-index: 1000;
+      }
+
+      #backdrop.show {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+    #submitEvent {
+  margin: 2rem auto;
+  max-width: 500px;
+  padding: 1.5rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+#submitEvent input, #submitEvent textarea {
+  width: 100%;
+  padding: 0.8rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+#submitEvent button {
+  background: #4CAF50;
+  color: white;
+  padding: 0.8rem 1.2rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+#submitEvent button:hover {
+  background: #45a049;
 }
 
   </style>
 </head>
+
 <body>
   <header>
     <h1>Admin Dashboard</h1>
     <p>Secure Access to Event Registrations</p>
   </header>
 
-<nav>
-  <button id="menuToggle" aria-label="Toggle navigation">☰</button>
-  <div id="navLinks">
-    <a href="index.html">Home</a>
-    <a href="events.html">Events</a>
-    <a href="churches.html">Churches</a>
-    <a href="gallery.html">Gallery</a>
-    <a href="contact.html">Contact</a>
-    <a href="admin.html">Admin</a>
-  </div>
-</nav>
-<div id="backdrop"></div>
+  <nav>
+    <button id="menuToggle" aria-label="Toggle navigation">☰</button>
+    <div id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="events.html">Events</a>
+      <a href="churches.html">Churches</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="contact.html">Contact</a>
+      <a href="admin.html">Admin</a>
+    </div>
+  </nav>
+  <div id="backdrop"></div>
 
 
   <section id="loginSection">
-  <h2>Admin Login</h2>
+    <h2>Admin Login</h2>
 
-  <!-- Email/Password Login -->
-  <form id="loginForm">
-    <input type="email" id="adminEmail" placeholder="Admin Email" required><br>
-    <input type="password" id="adminPassword" placeholder="Password" required><br>
-    <button type="submit">Login with Email</button>
-  </form>
+    <!-- Email/Password Login -->
+    <form id="loginForm">
+      <input type="email" id="adminEmail" placeholder="Admin Email" required><br>
+      <input type="password" id="adminPassword" placeholder="Password" required><br>
+      <button type="submit">Login with Email</button>
+    </form>
 
-  <p>OR</p>
+    <p>OR</p>
 
-  <!-- Google Login -->
-  <button id="googleLoginBtn">Sign in with Google</button>
-</section>
+    <!-- Google Login -->
+    <button id="googleLoginBtn">Sign in with Google</button>
+  </section>
 
 
   <!-- Admin Section -->
@@ -257,37 +298,82 @@
       </tbody>
     </table>
   </section>
-<section id="eventControls" style="display:none;">
-  <h2>Event Management</h2>
-  <button>Add Event</button>
-  <button>Edit Event</button>
-</section>
+  <section id="eventControls" style="display:none;">
+    <h2>Event Management</h2>
+    <button>Add Event</button>
+    <button>Edit Event</button>
+  </section>
 
-<section id="adminControls" style="display:none;">
-  <h2>Admin Management</h2>
-  <button>Manage Admins</button>
-</section>
+  <section id="adminControls" style="display:none;">
+    <h2>Admin Management</h2>
+    <button>Manage Admins</button>
+  </section>
+  <section id="submitEvent">
+    <h2>Submit a New Event</h2>
+    <form id="eventForm">
+      <input type="text" id="eventTitle" placeholder="Event Title" required><br><br>
+      <input type="text" id="eventChurch" placeholder="Church Name" required><br><br>
+      <input type="date" id="eventDate" required><br><br>
+      <input type="text" id="eventLocation" placeholder="Location" required><br><br>
+      <textarea id="eventDesc" placeholder="Event Description" rows="4" required></textarea><br><br>
+      <button type="submit">Add Event</button>
+    </form>
+  </section>
 
   <footer>
     <p>&copy; 2026 Church Youth Events Hub | Powered by Mwotsam</p>
   </footer>
   <script>
-  const menuToggle = document.getElementById("menuToggle");
-  const navLinks = document.getElementById("navLinks");
-  const backdrop = document.getElementById("backdrop");
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+    const backdrop = document.getElementById("backdrop");
 
-  menuToggle.addEventListener("click", () => {
-    const isOpen = navLinks.classList.toggle("show");
-    backdrop.classList.toggle("show", isOpen);
-    menuToggle.textContent = isOpen ? "✖" : "☰";
-  });
+    menuToggle.addEventListener("click", () => {
+      const isOpen = navLinks.classList.toggle("show");
+      backdrop.classList.toggle("show", isOpen);
+      menuToggle.textContent = isOpen ? "✖" : "☰";
+    });
 
-  backdrop.addEventListener("click", () => {
-    navLinks.classList.remove("show");
-    backdrop.classList.remove("show");
-    menuToggle.textContent = "☰";
-  });
+    backdrop.addEventListener("click", () => {
+      navLinks.classList.remove("show");
+      backdrop.classList.remove("show");
+      menuToggle.textContent = "☰";
+    });
+  </script>
+<script>import { getFirestore, collection, addDoc } 
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const db = getFirestore(app);
+
+document.getElementById("eventForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const title = document.getElementById("eventTitle").value;
+  const church = document.getElementById("eventChurch").value;
+  const date = document.getElementById("eventDate").value;
+  const location = document.getElementById("eventLocation").value;
+  const desc = document.getElementById("eventDesc").value;
+
+  try {
+    await addDoc(collection(db, "events"), {
+      title,
+      church,
+      date,
+      location,
+      desc,
+      timestamp: Date.now()
+    });
+    alert("Event submitted successfully!");
+    e.target.reset();
+
+    // Refresh upcoming events immediately
+    loadEvents();
+  } catch (error) {
+    console.error("Error adding event:", error);
+    alert("Failed to submit event. Please try again.");
+  }
+});
 </script>
-
 </body>
+
 </html>

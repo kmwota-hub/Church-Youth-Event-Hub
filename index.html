@@ -6,7 +6,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Church Youth Events Hub</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* Spinner */
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #4CAF50;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 2rem auto;
+  display: none; /* hidden by default */
+}
 
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+  </style>
   <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -35,17 +52,23 @@
     <p>Uniting Youth Across Churches</p>
   </header>
 
-<nav>
-  <button id="menuToggle" aria-label="Toggle navigation">☰</button>
-  <div id="navLinks">
-    <a href="index.html">Home</a>
-    <a href="events.html">Events</a>
-    <a href="churches.html">Churches</a>
-    <a href="gallery.html">Gallery</a>
-    <a href="contact.html">Contact</a>
-    <a href="admin.html">Admin</a>
-  </div>
-</nav>
+  <nav>
+    <button id="menuToggle" aria-label="Toggle navigation">☰</button>
+    <div id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="events.html">Events</a>
+      <a href="churches.html">Churches</a>
+      <a href="gallery.html">Gallery</a>
+      <a href="contact.html">Contact</a>
+      <a href="admin.html">Admin</a>
+    </div>
+  </nav>
+  <!-- upcoming Events -->
+<section id="upcomingEvents">
+  <h2>Upcoming Events</h2>
+  <div id="loadingSpinner" class="spinner"></div>
+  <div id="eventsList"></div>
+</section>
 
   <section id="events">
     <h2>Upcoming Events</h2>
@@ -87,41 +110,41 @@
   </footer>
 
   <script src="script.js" type="module" defer></script>
-<script>
-  // Create toggle button
-  const toggleBtn = document.createElement("button");
-  toggleBtn.id = "darkModeToggle";
-  toggleBtn.textContent = "🌙 Dark Mode";
-  document.body.appendChild(toggleBtn);
+  <script>
+    // Create toggle button
+    const toggleBtn = document.createElement("button");
+    toggleBtn.id = "darkModeToggle";
+    toggleBtn.textContent = "🌙 Dark Mode";
+    document.body.appendChild(toggleBtn);
 
-  // Toggle dark mode
-  toggleBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    // Save preference
-    if (document.body.classList.contains("dark-mode")) {
-      localStorage.setItem("theme", "dark");
+    // Toggle dark mode
+    toggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+      // Save preference
+      if (document.body.classList.contains("dark-mode")) {
+        localStorage.setItem("theme", "dark");
+        toggleBtn.textContent = "☀️ Light Mode";
+      } else {
+        localStorage.setItem("theme", "light");
+        toggleBtn.textContent = "🌙 Dark Mode";
+      }
+    });
+
+    // Load saved preference
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark-mode");
       toggleBtn.textContent = "☀️ Light Mode";
-    } else {
-      localStorage.setItem("theme", "light");
-      toggleBtn.textContent = "🌙 Dark Mode";
     }
-  });
+  </script>
+  <script>
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
 
-  // Load saved preference
-  if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("dark-mode");
-    toggleBtn.textContent = "☀️ Light Mode";
-  }
-</script>
-<script>
-  const menuToggle = document.getElementById("menuToggle");
-  const navLinks = document.getElementById("navLinks");
-
-  menuToggle.addEventListener("click", () => {
-    navLinks.classList.toggle("show");
-    menuToggle.textContent = navLinks.classList.contains("show") ? "✖" : "☰";
-  });
-</script>
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+      menuToggle.textContent = navLinks.classList.contains("show") ? "✖" : "☰";
+    });
+  </script>
 
 
 </body>

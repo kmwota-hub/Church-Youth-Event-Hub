@@ -173,3 +173,90 @@ backdrop.addEventListener("click", () => {
   menuToggle.textContent = "☰";
 });
 
+// fetch eventsSection
+import { getFirestore, collection, getDocs } 
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const db = getFirestore(app);
+
+async function loadEvents() {
+  const eventsList = document.getElementById("eventsList");
+  eventsList.innerHTML = "";
+
+  try {
+    const querySnapshot = await getDocs(collection(db, "events"));
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const card = document.createElement("div");
+      card.classList.add("event-card");
+      card.innerHTML = `
+        <h3>${data.title} – ${data.church}</h3>
+        <p><strong>Date:</strong> ${data.date}</p>
+        <p><strong>Location:</strong> ${data.location}</p>
+        <p>${data.desc}</p>
+      `;
+      eventsList.appendChild(card);
+    });
+  } catch (error) {
+    console.error("Error loading events:", error);
+  }
+}
+
+// Call on page load
+document.addEventListener("DOMContentLoaded", loadEvents);
+
+import { addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+async function submitEvent(eventData) {
+  try {
+    await addDoc(collection(db, "events"), {
+      title: eventData.title,
+      church: eventData.church,
+      date: eventData.date,
+      location: eventData.location,
+      desc: eventData.desc,
+      timestamp: Date.now()
+    });
+    alert("Event submitted successfully!");
+    loadEvents(); // refresh list immediately
+  } catch (error) {
+    console.error("Error adding event:", error);
+  }
+}
+import { getFirestore, collection, getDocs } 
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const db = getFirestore(app);
+
+async function loadEvents() {
+  const spinner = document.getElementById("loadingSpinner");
+  const eventsList = document.getElementById("eventsList");
+
+  // Show spinner
+  spinner.style.display = "block";
+  eventsList.innerHTML = "";
+
+  try {
+    const querySnapshot = await getDocs(collection(db, "events"));
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      const card = document.createElement("div");
+      card.classList.add("event-card");
+      card.innerHTML = `
+        <h3>${data.title} – ${data.church}</h3>
+        <p><strong>Date:</strong> ${data.date}</p>
+        <p><strong>Location:</strong> ${data.location}</p>
+        <p>${data.desc}</p>
+      `;
+      eventsList.appendChild(card);
+    });
+  } catch (error) {
+    console.error("Error loading events:", error);
+  } finally {
+    // Hide spinner
+    spinner.style.display = "none";
+  }
+}
+
+// Run on page load
+document.addEventListener("DOMContentLoaded", loadEvents);
